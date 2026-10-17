@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "Mis cosas",
+  "short_name": "Mis cosas",
+  "description": "Todo lo que tienes, dónde está y a quién se lo prestaste.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "es",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
