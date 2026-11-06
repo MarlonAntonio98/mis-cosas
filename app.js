@@ -4,7 +4,7 @@ if (window.top !== window.self) { document.documentElement.classList.add('framed
 
 const $ = s => document.querySelector(s);
 const main = $('#main'), ov = $('#overlay');
-const APP_VERSION = 1;
+const APP_VERSION = 2;
 const CATS = [['electronicos','Electrónicos','#6FB7E8'],['electrodomesticos','Electrodomésticos','#4AC1C9'],['muebles','Muebles','#B58A5A'],['cocina','Cocina','#E8894A'],['libros','Libros','#C9A24A'],['estudio','Estudio y oficina','#8C9CE8'],['herramientas','Herramientas','#9AA3AD'],['deporte','Deporte','#5FD3A0'],['decoracion','Decoración','#E86AA0'],['juegos','Juegos y hobbies','#B07BE8'],['cuidado','Cuidado personal','#E8A0C9'],['otros','Otros','#8E8E96']];
 const CAT = Object.fromEntries(CATS.map(([k, n, c]) => [k, {n, c}]));
 const STATES = [['nuevo','Nuevo'],['bueno','Buen estado'],['usado','Usado'],['danado','Dañado']];
@@ -89,7 +89,7 @@ function viewLent(){ let h = topBar(); const l = items.filter(i => i.loan).sort(
     return `<button class="item" data-open="${esc(i.id)}">${thumb(i)}<span class="it-main"><span class="it-name">${esc(i.name)}</span><span class="it-meta">${esc(i.loan.who)}, ${d === 0 ? 'desde hoy' : d === 1 ? 'desde ayer' : `hace ${d} días`}</span></span>${i.loan.back ? `<span class="when ${late ? 'bad' : ''}">${late ? 'Debía volver' : 'Vuelve'} ${parse(i.loan.back).toLocaleDateString('es-SV', {day:'numeric', month:'short'}).replace(/\./g, '')}</span>` : ''}</button>`; }).join('')}</div>` + fab(); }
 function viewDetail(){ const i = items.find(x => x.id === view.id); if (!i){ view = {name:tab}; return viewThings(); }
   let h = `<header class="bar"><button class="icon-btn" data-act="back" aria-label="Volver">${ic('back')}</button><h1 class="title title-sm">${esc(CAT[i.cat].n)}</h1><button class="pill-btn ghost" data-act="edit">Editar</button></header>`;
-  h += i.photo ? `<img class="hero-photo" src="${i.photo}" alt="">` : '';
+  h += i.photo ? `<img class="hero-photo" src="${i.photo}" alt="">` : `<label class="hero-ph add">${ic('camera',30)}<span>Tomar foto</span><input type="file" accept="image/*" capture="environment" id="d_photo" hidden></label>`;
   h += `<h1 class="d-name">${esc(i.name)}</h1><button class="where-big" data-place="${esc(i.loc || 'Sin lugar')}">${ic('pin',20)}<span><small>Dónde está</small><b>${esc(i.loc || 'Sin lugar anotado')}</b></span></button>`;
   if (i.loan){ const late = i.loan.back && daysTo(i.loan.back) < 0; h += `<div class="loan${late ? ' late' : ''}">${ic('hand',20)}<span><small>Prestado a</small><b>${esc(i.loan.who)}</b><small>Desde el ${fmtD(i.loan.since)}${i.loan.back ? `. ${late ? 'Debía volver' : 'Vuelve'} el ${fmtD(i.loan.back)}` : ''}</small></span></div>`; }
   if (i.warranty){ const n = daysTo(i.warranty); h += `<div class="warr ${n < 0 ? 'off' : n <= 30 ? 'soon' : ''}">${ic('shield',20)}<span><small>Garantía</small><b>${n < 0 ? 'Ya venció' : n === 0 ? 'Vence hoy' : `Quedan ${plural(n, 'día', 'días')}`}</b><small>Hasta el ${fmtD(i.warranty)}</small></span></div>`; }
@@ -98,7 +98,8 @@ function viewDetail(){ const i = items.find(x => x.id === view.id); if (!i){ vie
   if (i.note) h += `<div class="box"><p class="fine">${esc(i.note)}</p></div>`;
   h += i.loan ? `<button class="btn btn-primary" data-act="returned">Ya me lo devolvieron</button>` : `<button class="btn btn-secondary" data-act="lend">${ic('hand',18)} Lo presté</button>`;
   return h + `<button class="btn btn-danger-text mt" data-act="delete">Eliminar</button>`; }
-function photoSlot(){ return `<div class="photo-big" id="photoSlot">${draft.photo ? `<img src="${draft.photo}" alt=""><button type="button" class="photo-x" data-act="rmPhoto" aria-label="Quitar foto">${ic('x',16)}</button>` : `<label class="photo-pick big">${ic('camera',28)}<span>Tomar o elegir foto</span><input type="file" accept="image/*" id="f_photo" hidden></label>`}</div>`; }
+function photoSlot(){ const pick = (cls) => `<div class="photo-btns${cls}"><label class="photo-btn main">${ic('camera',22)}<span>Tomar foto</span><input type="file" accept="image/*" capture="environment" id="f_photo" hidden></label><label class="photo-btn">${ic('grid',20)}<span>Galería</span><input type="file" accept="image/*" id="f_photo2" hidden></label></div>`;
+  return `<div class="photo-big" id="photoSlot">${draft.photo ? `<img src="${draft.photo}" alt=""><button type="button" class="photo-x" data-act="rmPhoto" aria-label="Quitar foto">${ic('x',16)}</button>${pick(' small')}` : pick('')}</div>`; }
 function viewForm(){ const d = draft, edit = items.some(i => i.id === d.id), locs = places().map(p => p[0]).filter(p => p !== 'Sin lugar');
   return `<header class="bar"><button class="icon-btn" data-act="back" aria-label="Cancelar">${ic('x')}</button><h1 class="title title-sm">${edit ? 'Editar' : 'Agregar'}</h1><button class="btn-save" data-act="save">Guardar</button></header>
   ${photoSlot()}
@@ -176,7 +177,8 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('input', e => { const t = e.target; if (t.id === 'q'){ query = t.value; const w = $('#listWrap'); if (w){ w.innerHTML = resultsHTML(); paint(); } } if (t.id === 'f_name') $('#e_name').textContent = ''; if (t.id === 'l_who') $('#l_err').textContent = ''; });
 document.addEventListener('change', async e => { const t = e.target;
-  if (t.id === 'f_photo'){ const f = t.files && t.files[0]; if (!f || !draft) return; try { draft.photo = await compress(f); $('#photoSlot').outerHTML = photoSlot(); } catch(err){ toast('No se pudo cargar la foto.'); } }
+  if (t.id === 'd_photo'){ const f = t.files && t.files[0]; t.value = ''; const i = items.find(x => x.id === view.id); if (!f || !i) return; try { i.photo = await compress(f); await saveItem(i); render(); toast('Foto guardada'); } catch(err){ toast('No se pudo cargar la foto.'); } return; }
+  if (t.id === 'f_photo' || t.id === 'f_photo2'){ const f = t.files && t.files[0]; t.value = ''; if (!f || !draft) return; try { draft.photo = await compress(f); $('#photoSlot').outerHTML = photoSlot(); } catch(err){ toast('No se pudo cargar la foto.'); } }
   if (t.id === 'f_import'){ const f = t.files && t.files[0]; t.value = ''; if (f) importBk(f); } });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && ovState) resolveSheet(null); });
 document.addEventListener('contextmenu', e => { if (e.target.closest('img')) e.preventDefault(); });

@@ -1,6 +1,6 @@
 'use strict';
 // Cuando cambies cualquier archivo de la app, sube este número para que el celular descargue la versión nueva.
-const VERSION = 'cosas-v3';
+const VERSION = 'cosas-v4';
 const PREFIX = 'cosas-';
 const FILES = ['./', 'index.html', 'app.js', 'styles.css', 'manifest.webmanifest', 'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 

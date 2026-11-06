@@ -260,3 +260,11 @@ img{-webkit-touch-callout:none;-webkit-user-drag:none}
 .loc-sugg .chip.on{background:var(--text);color:#000;border-color:var(--text)}
 .when.bad{color:var(--bad)}
 .search-box input:focus-visible{outline:none}.search-box:focus-within{border-color:var(--text)}
+.photo-btns{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+.photo-btns.small{margin-top:10px;grid-template-columns:1fr 1fr}
+.photo-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:130px;border-radius:18px;border:1px dashed var(--line2);background:var(--surface);color:var(--muted);font-size:14px;cursor:pointer}
+.photo-btn.main{border-style:solid;border-color:#6FB7E8;color:var(--text);background:color-mix(in srgb,#6FB7E8 12%,var(--surface))}
+.photo-btn.main svg{color:#6FB7E8}
+.photo-btns.small .photo-btn{height:auto;flex-direction:row;padding:12px}
+.hero-ph.add{cursor:pointer;border:1px dashed #6FB7E8;color:var(--text)}
+.hero-ph.add svg{color:#6FB7E8}
